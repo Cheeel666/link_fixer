@@ -18,3 +18,6 @@ You can build this bot for yourself by following steps:
 ```
 
 3) go run main.go
+
+
+4) Done!
