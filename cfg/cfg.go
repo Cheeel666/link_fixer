@@ -1,7 +1,7 @@
 package cfg
 
 import (
-	"encoding/json"
+	"errors"
 	"os"
 )
 
@@ -9,17 +9,11 @@ type Config struct {
 	Token string `json:"token"`
 }
 
-func NewCfg(path string) (*Config, error) {
-	var cfg *Config
-	b, err := os.ReadFile(path)
-	if err != nil {
-		return nil, err
+func NewCfg() (cfg Config, err error) {
+	cfg.Token = os.Getenv("TG_TOKEN")
+	if cfg.Token == "" {
+		err = errors.New("missing telegram token")
+		return
 	}
-
-	err = json.Unmarshal(b, &cfg)
-	if err != nil {
-		return nil, err
-	}
-
-	return cfg, nil
+	return
 }

@@ -1,0 +1,23 @@
+version: '3.6'
+
+networks:
+  link-fixer:
+    external: false
+
+services:
+
+  link-fixer:
+    build:
+      dockerfile: docker/Dockerfile
+      context: .
+      args:
+        ALPINE_VER: "3.17"
+        ALPINE_IMAGE: "alpine"
+        GO_IMAGE: 'golang'
+        GO_VER: '1.21'
+    environment:
+      - TG_TOKEN=${TG_TOKEN}
+    ports:
+      - "8000:8000"
+    networks:
+      - link-fixer
