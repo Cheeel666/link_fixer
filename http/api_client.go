@@ -29,6 +29,7 @@ func (c *stdTelegramAPIClient) Get(command string, v interface{}) error {
 func (c *stdTelegramAPIClient) Post(command string, data url.Values, v interface{}) error {
 	url := c.baseUrl + command
 	resp, err := http.PostForm(url, data)
+
 	if err != nil {
 		return err
 	}

@@ -13,6 +13,7 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/davecgh/go-spew/spew"
 	"github.com/sirupsen/logrus"
 )
 
@@ -71,7 +72,7 @@ func main() {
 				}
 
 				for _, update := range updates {
-					log.Info("update: ", update)
+					log.Info("update: ", spew.Sdump(update.Message))
 					if update.Message == nil {
 						continue
 					}
@@ -79,8 +80,8 @@ func main() {
 
 					if instaReel.MatchString(text) {
 						resp := replaceString(text)
-						log.Info("message matched: user ", update.Message.From.Username, update.Message.From.ID, "chat", "")
-						log.Info("message: ", text, "response:", resp)
+						log.Info("message matched: user ", update.Message.From.Username, update.Message.From.ID, "chat -", update.Message.Chat.ID)
+						log.Info("message: ", text, "\n", "response:", resp)
 
 						response := fmt.Sprintf("@%s прислал:\n%s", update.Message.From.Username, resp)
 						err := bot.SendMessage(update.Message.Chat.ID, response)
