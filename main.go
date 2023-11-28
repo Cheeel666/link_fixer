@@ -79,8 +79,7 @@ func main() {
 
 					if instaReel.MatchString(text) {
 						resp := replaceString(text)
-						log.Info("message matched: user ", update.Message.From.Username, update.Message.From.ID, "chat -", update.Message.Chat.ID)
-						log.Info("message: ", text, "\n", "response:", resp)
+						log.Info("response:", resp)
 
 						response := fmt.Sprintf("@%s прислал:\n%s", update.Message.From.Username, resp)
 						err := bot.SendMessage(update.Message.Chat.ID, response)
