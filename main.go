@@ -21,14 +21,13 @@ var instaReel = regexp.MustCompile(`https://www.instagram.com/reel(.*?)`)
 var log = logrus.New()
 
 const (
-	cfgPath       = "cfg/cfg.json"
 	oldPrefix     = "https://www.instagram.com/reel"
 	newPrefix     = "https://www.ddinstagram.com/reel"
 	replaceAmount = 1
 )
 
 func main() {
-	cfg, err := cfg.NewCfg(cfgPath)
+	cfg, err := cfg.NewCfg()
 	if err != nil {
 		panic(err)
 	}
