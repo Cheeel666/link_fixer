@@ -7,17 +7,15 @@ Bot is currentrly in development state.
 # Build
 You can build this bot for yourself by following steps:
 
-1) Create cfg/cfg.json
+1) Create .env file in project root folder
 
 
-2) Add to cfg/cfg.json token:
-``` json
-{
-    "token":"..." // here should be your token
-}
+2) Add to .env file token:
+``` env
+TG_TOKEN=...
 ```
 
-3) go run main.go
+3) make run
 
 
 4) Done!
