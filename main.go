@@ -13,7 +13,6 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/davecgh/go-spew/spew"
 	"github.com/sirupsen/logrus"
 )
 
@@ -71,7 +70,6 @@ func main() {
 				}
 
 				for _, update := range updates {
-					log.Info("update: ", spew.Sdump(update.Message))
 					if update.Message == nil {
 						continue
 					}
