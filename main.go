@@ -17,11 +17,14 @@ import (
 )
 
 var instaReel = regexp.MustCompile(`https://www.instagram.com/reel(.*?)`)
+
 var log = logrus.New()
 
 const (
-	oldPrefix     = "https://www.instagram.com/reel"
-	newPrefix     = "https://www.ddinstagram.com/reel"
+	reelPrefix    = "https://www.instagram.com/reel"
+	reelsPrefix   = "https://www.instagram.com/reels"
+	newReelPrefix = "https://www.ddinstagram.com/reel"
+
 	replaceAmount = 1
 )
 
@@ -111,7 +114,10 @@ func main() {
 }
 
 func replaceString(msg string) string {
-	return strings.Replace(msg, oldPrefix, newPrefix, replaceAmount)
+	if strings.Contains(msg, reelsPrefix) {
+		return strings.Replace(msg, reelsPrefix, fmt.Sprintf("%ss", newReelPrefix), replaceAmount)
+	}
+	return strings.Replace(msg, reelPrefix, newReelPrefix, replaceAmount)
 }
 
 func abortOnError(errChan <-chan error, abort <-chan bool) {
