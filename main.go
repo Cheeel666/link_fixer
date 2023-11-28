@@ -23,7 +23,7 @@ var log = logrus.New()
 const (
 	reelPrefix    = "https://www.instagram.com/reel"
 	reelsPrefix   = "https://www.instagram.com/reels"
-	newReelPrefix = "https://www.ddinstagram.com/reel"
+	newReelPrefix = "https://www.ddinstagram.com/reels"
 
 	replaceAmount = 1
 )
@@ -115,7 +115,7 @@ func main() {
 
 func replaceString(msg string) string {
 	if strings.Contains(msg, reelsPrefix) {
-		return strings.Replace(msg, reelsPrefix, fmt.Sprintf("%ss", newReelPrefix), replaceAmount)
+		return strings.Replace(msg, reelsPrefix, newReelPrefix, replaceAmount)
 	}
 	return strings.Replace(msg, reelPrefix, newReelPrefix, replaceAmount)
 }
