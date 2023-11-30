@@ -12,25 +12,28 @@ import (
 )
 
 const (
-	prefix = "instagram.com"
+	prefix = "www.instagram.com"
 
-	newPrefix = "ddinstagram.com"
+	newPrefix = "www.ddinstagram.com"
 
 	replaceAmount = 1
 )
 
-var instaReel = regexp.MustCompile(`instagram.com(.*?)`)
+var instaReel = regexp.MustCompile(`www.instagram.com/(.*?)/`)
 
 type Bot struct {
 	httpClient http.TelegramAPIClient
 	readFlag   bool
 	stopSignal chan bool
 
+	offset int64
+
 	logger *logrus.Logger
 }
 
 func NewBot(httpClient http.TelegramAPIClient, logger *logrus.Logger) *Bot {
 	return &Bot{
+		offset:     1,
 		httpClient: httpClient,
 		readFlag:   true,
 		logger:     logger,
@@ -38,8 +41,19 @@ func NewBot(httpClient http.TelegramAPIClient, logger *logrus.Logger) *Bot {
 	}
 }
 
+// recalculateOffset to prevent spam with bot start
+func (b *Bot) recalculateOffset() {
+	updates, err := b.GetUpdates(b.offset)
+	if err != nil {
+		b.logger.Error(err)
+	}
+	for _, update := range updates {
+		b.offset = update.ID + 1
+	}
+}
+
 func (b *Bot) Start() {
-	offset := int64(1)
+	b.recalculateOffset()
 
 	for {
 		select {
@@ -47,11 +61,10 @@ func (b *Bot) Start() {
 			b.logger.Info("Exiting update checking")
 			return
 		default:
-			updates, err := b.GetUpdates(offset)
+			updates, err := b.GetUpdates(b.offset)
 			if err != nil {
-				b.logger.Error(err) // send error to chan
+				b.logger.Error(err)
 			}
-
 			for _, update := range updates {
 				if update.Message == nil {
 					continue
@@ -69,7 +82,7 @@ func (b *Bot) Start() {
 					}
 
 				}
-				offset = update.ID + 1
+				b.offset = update.ID + 1
 			}
 		}
 	}

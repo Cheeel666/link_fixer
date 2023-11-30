@@ -35,3 +35,8 @@ type Chat struct {
 	Title    string `json:"title"`
 	Username string `json:"username"`
 }
+
+// TODO: add full struct
+type SendMessageResp struct {
+	OK bool `json:"ok"`
+}
