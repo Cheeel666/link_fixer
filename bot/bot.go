@@ -19,7 +19,7 @@ const (
 	replaceAmount = 1
 )
 
-var instaReel = regexp.MustCompile(`https://www.instagram.com/reel(.*?)`)
+var instaReel = regexp.MustCompile(`instagram.com(.*?)`)
 
 type Bot struct {
 	httpClient http.TelegramAPIClient
