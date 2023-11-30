@@ -1,31 +1,15 @@
 package main
 
 import (
-	"errors"
-	"fmt"
 	"miniEdward/bot"
 	"miniEdward/cfg"
 	"miniEdward/http"
+	"miniEdward/srv"
 	"os"
 	"os/signal"
-	"regexp"
-	"strings"
 	"syscall"
-	"time"
 
 	"github.com/sirupsen/logrus"
-)
-
-var instaReel = regexp.MustCompile(`https://www.instagram.com/reel(.*?)`)
-
-var log = logrus.New()
-
-const (
-	prefix = "instagram.com"
-
-	newPrefix = "ddinstagram.com"
-
-	replaceAmount = 1
 )
 
 func main() {
@@ -34,6 +18,7 @@ func main() {
 		panic(err)
 	}
 
+	log := logrus.New()
 	log.Out = os.Stdout
 
 	file, err := os.OpenFile("logrus.log", os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
@@ -48,83 +33,16 @@ func main() {
 		log.Fatal(err)
 	}
 
-	bot := bot.NewBot(httpClient)
+	bot := bot.NewBot(httpClient, log)
 
-	offset := int64(1)
-	gcCount := 0
-
-	errChan := make(chan error)
-	abortChan := make(chan bool, 2)
-	go abortOnError(errChan, abortChan)
-	gcCount += 1
-
+	server := srv.NewSrv(bot)
 	log.Info("starting message checking")
-	gcCount += 1
-	go func() {
-		for {
-			select {
-			case <-abortChan:
-				log.Info("Exiting update checking")
-				return
-			default:
-				updates, err := bot.GetUpdates(offset)
-				if err != nil {
-					errChan <- err // send error to chan
-				}
+	go server.Bot.Start()
+	defer server.Bot.Stop()
 
-				for _, update := range updates {
-					if update.Message == nil {
-						continue
-					}
-					text := update.Message.Text
-
-					if instaReel.MatchString(text) {
-						resp := replaceString(text)
-						log.Info("response:", resp)
-
-						response := fmt.Sprintf("%s", resp)
-						err := bot.SendMessage(update.Message.Chat.ID, update.Message.ID, response)
-						if err != nil {
-							errChan <- errors.New(fmt.Sprintf("failed to send message: %s", err.Error()))
-						}
-
-					}
-					offset = update.ID + 1
-				}
-			}
-		}
-
-	}()
+	go server.Start()
 
 	var stopChan = make(chan os.Signal, 2)
 	signal.Notify(stopChan, os.Interrupt, syscall.SIGTERM, syscall.SIGINT)
-
 	<-stopChan // wait for SIGINT
-
-	for i := 0; i < gcCount; i++ {
-		abortChan <- true
-	}
-
-	log.Info("Waiting till processes die")
-	time.Sleep(time.Second * 1)
-}
-
-func replaceString(msg string) string {
-	return strings.Replace(msg, prefix, newPrefix, replaceAmount)
-}
-
-func abortOnError(errChan <-chan error, abort <-chan bool) {
-	for {
-		select {
-		case err := <-errChan:
-			log.Error(err)
-
-		case <-abort:
-			log.Warn("Exiting error checking")
-			return
-		default:
-			time.Sleep(time.Second * 1)
-		}
-	}
-
 }
