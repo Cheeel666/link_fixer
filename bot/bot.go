@@ -66,16 +66,18 @@ func (b *Bot) Start() {
 				b.logger.Error(err)
 			}
 			for _, update := range updates {
-				if update.Message == nil {
+				if update.Message == nil || update.Message.Chat == nil {
+					b.offset = update.ID + 1
 					continue
 				}
 				text := update.Message.Text
 
 				if instaReel.MatchString(text) && b.readFlag {
-					resp := replaceString(text)
-					b.logger.Info("response:", resp)
+					newStr := replaceString(text)
+					b.logger.Info("response:", newStr)
 
-					response := fmt.Sprintf("%s", resp)
+					response := fmt.Sprintf("%s", newStr)
+
 					err := b.SendMessage(update.Message.Chat.ID, update.Message.ID, response)
 					if err != nil {
 						b.logger.Error(errors.New(fmt.Sprintf("failed to send message: %s", err.Error())))
