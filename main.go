@@ -21,9 +21,9 @@ var instaReel = regexp.MustCompile(`https://www.instagram.com/reel(.*?)`)
 var log = logrus.New()
 
 const (
-	reelPrefix    = "https://www.instagram.com/reel"
-	reelsPrefix   = "https://www.instagram.com/reels"
-	newReelPrefix = "https://www.ddinstagram.com/reels"
+	prefix = "instagram.com"
+
+	newPrefix = "ddinstagram.com"
 
 	replaceAmount = 1
 )
@@ -82,14 +82,10 @@ func main() {
 						resp := replaceString(text)
 						log.Info("response:", resp)
 
-						response := fmt.Sprintf("@%s прислал:\n%s", update.Message.From.Username, resp)
-						err := bot.SendMessage(update.Message.Chat.ID, response)
+						response := fmt.Sprintf("%s", resp)
+						err := bot.SendMessage(update.Message.Chat.ID, update.Message.ID, response)
 						if err != nil {
 							errChan <- errors.New(fmt.Sprintf("failed to send message: %s", err.Error()))
-						}
-						err = bot.DeleteMessage(update.Message.Chat.ID, update.Message.ID)
-						if err != nil {
-							errChan <- errors.New(fmt.Sprintf("failed to delete message: %s", err.Error()))
 						}
 
 					}
@@ -114,10 +110,7 @@ func main() {
 }
 
 func replaceString(msg string) string {
-	if strings.Contains(msg, reelsPrefix) {
-		return strings.Replace(msg, reelsPrefix, newReelPrefix, replaceAmount)
-	}
-	return strings.Replace(msg, reelPrefix, newReelPrefix, replaceAmount)
+	return strings.Replace(msg, prefix, newPrefix, replaceAmount)
 }
 
 func abortOnError(errChan <-chan error, abort <-chan bool) {
