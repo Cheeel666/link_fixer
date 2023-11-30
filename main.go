@@ -4,7 +4,6 @@ import (
 	"miniEdward/bot"
 	"miniEdward/cfg"
 	"miniEdward/http"
-	"miniEdward/srv"
 	"os"
 	"os/signal"
 	"syscall"
@@ -35,15 +34,15 @@ func main() {
 
 	bot := bot.NewBot(httpClient, log)
 
-	server := srv.NewSrv(bot)
+	// server := srv.NewSrv(bot)
 	log.Info("starting message checking")
-	go server.Bot.Start()
-	defer server.Bot.Stop()
+	go bot.Start()
+	defer bot.Stop()
 
 	// TODO: add ability to kill this f thing remotely
 	// go server.Start()
 
-	var stopChan = make(chan os.Signal, 2)
+	var stopChan = make(chan os.Signal, 1)
 	signal.Notify(stopChan, os.Interrupt, syscall.SIGTERM, syscall.SIGINT)
 	<-stopChan // wait for SIGINT
 }

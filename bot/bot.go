@@ -33,6 +33,8 @@ func NewBot(httpClient http.TelegramAPIClient, logger *logrus.Logger) *Bot {
 	return &Bot{
 		httpClient: httpClient,
 		readFlag:   true,
+		logger:     logger,
+		stopSignal: make(chan bool),
 	}
 }
 

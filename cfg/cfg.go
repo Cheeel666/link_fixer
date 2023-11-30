@@ -9,11 +9,14 @@ type Config struct {
 	Token string `json:"token"`
 }
 
-func NewCfg() (cfg Config, err error) {
-	cfg.Token = os.Getenv("TG_TOKEN")
-	if cfg.Token == "" {
-		err = errors.New("missing telegram token")
-		return
+func NewCfg() (*Config, error) {
+	cfg := &Config{
+		Token: os.Getenv("TG_TOKEN"),
 	}
-	return
+
+	if cfg.Token == "" {
+		return nil, errors.New("missing telegram token")
+	}
+
+	return cfg, nil
 }
