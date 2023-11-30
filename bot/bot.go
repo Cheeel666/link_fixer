@@ -32,7 +32,7 @@ type Bot struct {
 func NewBot(httpClient http.TelegramAPIClient, logger *logrus.Logger) *Bot {
 	return &Bot{
 		httpClient: httpClient,
-		readFlag:   false,
+		readFlag:   true,
 	}
 }
 

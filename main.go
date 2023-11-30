@@ -40,7 +40,8 @@ func main() {
 	go server.Bot.Start()
 	defer server.Bot.Stop()
 
-	go server.Start()
+	// TODO: add ability to kill this f thing remotely
+	// go server.Start()
 
 	var stopChan = make(chan os.Signal, 2)
 	signal.Notify(stopChan, os.Interrupt, syscall.SIGTERM, syscall.SIGINT)
